@@ -114,7 +114,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                       contrato.cliente_email ? ['Email', contrato.cliente_email] : null,
                       contrato.cliente_direccion ? ['Dirección', contrato.cliente_direccion] : null,
                       contrato.cliente_localidad ? ['Localidad', `${contrato.cliente_localidad}${contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}`] : null,
-                    ].filter(Boolean).map(([label, value], i) => (
+                    ].filter((x) => x !== null).map(([label, value], i) => (
                       <tr key={i}>
                         <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">{label}</td>
                         <td className="text-sm font-medium py-1">{value}</td>
@@ -142,7 +142,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                       contrato.evento_direccion ? ['Dirección', contrato.evento_direccion] : null,
                       contrato.evento_horario_desde ? ['Horario', `${contrato.evento_horario_desde} a ${contrato.evento_horario_hasta}`] : null,
                       contrato.evento_invitados ? ['Invitados', contrato.evento_invitados] : null,
-                    ].filter(Boolean).map(([label, value], i) => (
+                    ].filter((x) => x !== null).map(([label, value], i) => (
                       <tr key={i}>
                         <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">{label}</td>
                         <td className="text-sm font-medium py-1">{value}</td>
