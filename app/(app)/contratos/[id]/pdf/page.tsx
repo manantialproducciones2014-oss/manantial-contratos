@@ -107,14 +107,16 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
                 <table className="w-full">
                   <tbody>
-                    {[
-                      ['Nombre', contrato.cliente_nombre],
-                      ['DNI', contrato.cliente_dni],
-                      ['Teléfono', contrato.cliente_telefono],
-                      contrato.cliente_email ? ['Email', contrato.cliente_email] : null,
-                      contrato.cliente_direccion ? ['Dirección', contrato.cliente_direccion] : null,
-                      contrato.cliente_localidad ? ['Localidad', `${contrato.cliente_localidad}${contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}`] : null,
-                    ].filter((x) => x !== null).map(([label, value], i) => (
+                    {(
+                      [
+                        ['Nombre', contrato.cliente_nombre],
+                        ['DNI', contrato.cliente_dni],
+                        ['Teléfono', contrato.cliente_telefono],
+                        contrato.cliente_email ? ['Email', contrato.cliente_email] : null,
+                        contrato.cliente_direccion ? ['Dirección', contrato.cliente_direccion] : null,
+                        contrato.cliente_localidad ? ['Localidad', `${contrato.cliente_localidad}${contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}`] : null,
+                      ].filter(Boolean) as [string, string][]
+                    ).map(([label, value], i) => (
                       <tr key={i}>
                         <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">{label}</td>
                         <td className="text-sm font-medium py-1">{value}</td>
@@ -134,15 +136,17 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
                 <table className="w-full">
                   <tbody>
-                    {[
-                      ['Tipo', contrato.tipo_evento],
-                      contrato.evento_nombre ? ['Festejada', contrato.evento_nombre] : null,
-                      contrato.evento_fecha ? ['Fecha', formatDate(contrato.evento_fecha)] : null,
-                      contrato.evento_lugar ? ['Lugar', contrato.evento_lugar] : null,
-                      contrato.evento_direccion ? ['Dirección', contrato.evento_direccion] : null,
-                      contrato.evento_horario_desde ? ['Horario', `${contrato.evento_horario_desde} a ${contrato.evento_horario_hasta}`] : null,
-                      contrato.evento_invitados ? ['Invitados', contrato.evento_invitados] : null,
-                    ].filter((x) => x !== null).map(([label, value], i) => (
+                    {(
+                      [
+                        ['Tipo', contrato.tipo_evento],
+                        contrato.evento_nombre ? ['Festejada', contrato.evento_nombre] : null,
+                        contrato.evento_fecha ? ['Fecha', formatDate(contrato.evento_fecha)] : null,
+                        contrato.evento_lugar ? ['Lugar', contrato.evento_lugar] : null,
+                        contrato.evento_direccion ? ['Dirección', contrato.evento_direccion] : null,
+                        contrato.evento_horario_desde ? ['Horario', `${contrato.evento_horario_desde} a ${contrato.evento_horario_hasta}`] : null,
+                        contrato.evento_invitados ? ['Invitados', contrato.evento_invitados] : null,
+                      ].filter(Boolean) as [string, string][]
+                    ).map(([label, value], i) => (
                       <tr key={i}>
                         <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">{label}</td>
                         <td className="text-sm font-medium py-1">{value}</td>
