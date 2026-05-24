@@ -26,6 +26,7 @@ type Pago = {
 }
 
 export default async function PdfPage({ params }: { params: { id: string } }) {
+  // Fix TypeScript filter issue
   const supabase = createClient()
 
   const [{ data: contrato }, { data: pagos }] = await Promise.all([
