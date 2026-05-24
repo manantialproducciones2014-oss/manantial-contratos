@@ -108,21 +108,36 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
                 <table className="w-full">
                   <tbody>
-                    {(
-                      [
-                        ['Nombre', contrato.cliente_nombre],
-                        ['DNI', contrato.cliente_dni],
-                        ['Teléfono', contrato.cliente_telefono],
-                        contrato.cliente_email ? ['Email', contrato.cliente_email] : null,
-                        contrato.cliente_direccion ? ['Dirección', contrato.cliente_direccion] : null,
-                        contrato.cliente_localidad ? ['Localidad', `${contrato.cliente_localidad}${contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}`] : null,
-                      ].filter(Boolean) as [string, string][]
-                    ).map(([label, value], i) => (
-                      <tr key={i}>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">{label}</td>
-                        <td className="text-sm font-medium py-1">{value}</td>
+                    <tr>
+                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Nombre</td>
+                      <td className="text-sm font-medium py-1">{contrato.cliente_nombre}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">DNI</td>
+                      <td className="text-sm font-medium py-1">{contrato.cliente_dni}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Teléfono</td>
+                      <td className="text-sm font-medium py-1">{contrato.cliente_telefono}</td>
+                    </tr>
+                    {contrato.cliente_email && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Email</td>
+                        <td className="text-sm font-medium py-1">{contrato.cliente_email}</td>
                       </tr>
-                    ))}
+                    )}
+                    {contrato.cliente_direccion && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Dirección</td>
+                        <td className="text-sm font-medium py-1">{contrato.cliente_direccion}</td>
+                      </tr>
+                    )}
+                    {contrato.cliente_localidad && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Localidad</td>
+                        <td className="text-sm font-medium py-1">{contrato.cliente_localidad}{contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -137,22 +152,46 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
                 <table className="w-full">
                   <tbody>
-                    {(
-                      [
-                        ['Tipo', contrato.tipo_evento],
-                        contrato.evento_nombre ? ['Festejada', contrato.evento_nombre] : null,
-                        contrato.evento_fecha ? ['Fecha', formatDate(contrato.evento_fecha)] : null,
-                        contrato.evento_lugar ? ['Lugar', contrato.evento_lugar] : null,
-                        contrato.evento_direccion ? ['Dirección', contrato.evento_direccion] : null,
-                        contrato.evento_horario_desde ? ['Horario', `${contrato.evento_horario_desde} a ${contrato.evento_horario_hasta}`] : null,
-                        contrato.evento_invitados ? ['Invitados', contrato.evento_invitados] : null,
-                      ].filter(Boolean) as [string, string][]
-                    ).map(([label, value], i) => (
-                      <tr key={i}>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">{label}</td>
-                        <td className="text-sm font-medium py-1">{value}</td>
+                    <tr>
+                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Tipo</td>
+                      <td className="text-sm font-medium py-1">{contrato.tipo_evento}</td>
+                    </tr>
+                    {contrato.evento_nombre && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Festejada</td>
+                        <td className="text-sm font-medium py-1">{contrato.evento_nombre}</td>
                       </tr>
-                    ))}
+                    )}
+                    {contrato.evento_fecha && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Fecha</td>
+                        <td className="text-sm font-medium py-1">{formatDate(contrato.evento_fecha)}</td>
+                      </tr>
+                    )}
+                    {contrato.evento_lugar && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Lugar</td>
+                        <td className="text-sm font-medium py-1">{contrato.evento_lugar}</td>
+                      </tr>
+                    )}
+                    {contrato.evento_direccion && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Dirección</td>
+                        <td className="text-sm font-medium py-1">{contrato.evento_direccion}</td>
+                      </tr>
+                    )}
+                    {contrato.evento_horario_desde && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Horario</td>
+                        <td className="text-sm font-medium py-1">{contrato.evento_horario_desde} a {contrato.evento_horario_hasta}</td>
+                      </tr>
+                    )}
+                    {contrato.evento_invitados && (
+                      <tr>
+                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Invitados</td>
+                        <td className="text-sm font-medium py-1">{contrato.evento_invitados}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
