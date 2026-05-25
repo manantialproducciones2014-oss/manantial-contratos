@@ -1,18 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
-
 export default function QuickAccess() {
-  useEffect(() => {
-    // Set cookie and redirect
-    document.cookie = 'dev-code=manantial2026; path=/; max-age=604800'
+  // Set cookie and redirect on mount
+  if (typeof window !== 'undefined') {
+    document.cookie = 'dev-code=manantial2026; path=/; max-age=604800; SameSite=Lax'
     window.location.href = '/'
-  }, [])
+  }
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
+    <div style={{ padding: '20px', textAlign: 'center', fontFamily: 'sans-serif' }}>
       <h1>Entrando...</h1>
-      <p>Si esto toma mucho tiempo, <a href="/">haz click aquí</a></p>
+      <p>Redirigiendo a la app...</p>
     </div>
   )
 }
