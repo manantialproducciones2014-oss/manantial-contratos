@@ -14,7 +14,6 @@ type ContratoInput = {
   cliente_nombre: string
   cliente_dni: string
   cliente_telefono: string
-  cliente_email: string
   cliente_direccion: string
   cliente_localidad: string
   cliente_cp: string

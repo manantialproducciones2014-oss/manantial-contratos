@@ -67,10 +67,10 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
         {/* Banda superior */}
         <div className="h-2 bg-[#C8A951]" />
 
-        <div className="px-12 py-10">
+        <div className="px-8 py-6">
 
           {/* Encabezado */}
-          <div className="flex items-start justify-between mb-8">
+          <div className="flex items-start justify-between mb-6">
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -90,16 +90,16 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Divisor */}
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-6">
             <div className="h-px flex-1 bg-gray-200" />
             <div className="h-1 w-10 bg-[#C8A951] rounded-full" />
             <div className="h-px flex-1 bg-gray-200" />
           </div>
 
           {/* Cliente y evento */}
-          <div className="grid grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <div className="bg-[#1E3558] px-4 py-2 rounded-t-lg">
+              <div className="bg-[#1E3558] px-3 py-1.5 rounded-t-lg">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-white">
                   Datos del Cliente
                 </h2>
@@ -119,12 +119,6 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                       <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Teléfono</td>
                       <td className="text-sm font-medium py-1">{contrato.cliente_telefono}</td>
                     </tr>
-                    {contrato.cliente_email && (
-                      <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Email</td>
-                        <td className="text-sm font-medium py-1">{contrato.cliente_email}</td>
-                      </tr>
-                    )}
                     {contrato.cliente_direccion && (
                       <tr>
                         <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Dirección</td>
@@ -143,7 +137,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <div className="bg-[#1E3558] px-4 py-2 rounded-t-lg">
+              <div className="bg-[#1E3558] px-3 py-1.5 rounded-t-lg">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-white">
                   Datos del Evento
                 </h2>
@@ -198,7 +192,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Servicios */}
-          <div className="mb-8">
+          <div className="mb-6">
             <div className="bg-[#1E3558] px-4 py-2 rounded-t-lg">
               <h2 className="text-xs font-bold uppercase tracking-widest text-white">
                 Servicios Contratados
@@ -206,7 +200,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
             </div>
             <div className="border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
               {combo && (
-                <div className="p-5 bg-gray-50/40">
+                <div className="p-3 bg-gray-50/40">
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-bold text-[#0A0A0A] text-base">{combo.nombre}</span>
                     <span className="font-bold text-[#C8A951] text-xl">{formatMoney(combo.precio)}</span>
@@ -216,7 +210,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                       {combo.cuotas_cantidad} cuotas de {formatMoney(combo.cuotas_monto)}
                     </p>
                   )}
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                     {combo.servicios.map((s, i) => (
                       <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
                         <span className="text-[#C8A951] shrink-0 mt-0.5">✓</span>
@@ -228,7 +222,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               )}
 
               {adicionales.length > 0 && (
-                <div className="border-t border-gray-200 px-5 py-3">
+                <div className="border-t border-gray-200 px-3 py-2">
                   <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Adicionales</p>
                   <div className="space-y-1">
                     {adicionales.map((a, i) => (
@@ -242,7 +236,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               )}
 
               {/* Total */}
-              <div className="bg-[#1E3558] px-5 py-3 flex items-center justify-between">
+              <div className="bg-[#1E3558] px-3 py-2 flex items-center justify-between">
                 <div>
                   <span className="text-white font-semibold text-sm">Total del Contrato</span>
                   <span className="text-blue-300 text-xs ml-3 capitalize">
@@ -256,8 +250,8 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
 
           {/* Pagos */}
           {pagosList.length > 0 && (
-            <div className="mb-8">
-              <div className="bg-[#1E3558] px-4 py-2 rounded-t-lg">
+            <div className="mb-6">
+              <div className="bg-[#1E3558] px-3 py-1.5 rounded-t-lg">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-white">
                   Pagos Registrados
                 </h2>
@@ -295,7 +289,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           )}
 
           {/* Responsable del evento */}
-          <div className="mb-8">
+          <div className="mb-6">
             <div className="bg-[#1E3558] px-4 py-2 rounded-t-lg">
               <h2 className="text-xs font-bold uppercase tracking-widest text-white">
                 Responsable del Evento
@@ -320,14 +314,14 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Términos */}
-          <div className="mb-10">
+          <div className="mb-6">
             <div className="bg-[#C8A951] px-4 py-2 rounded-t-lg">
               <h2 className="text-xs font-bold uppercase tracking-widest text-white">
                 Términos y Condiciones
               </h2>
             </div>
-            <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
-              <p className="text-xs text-gray-500 leading-relaxed">
+            <div className="border border-t-0 border-gray-200 rounded-b-lg p-3">
+              <p className="text-xs text-gray-500 leading-tight">
                 El Cliente reconoce y acuerda que la Empresa se reserva el derecho de utilizar dichas imágenes y video
                 en cualquier momento y cualquier ocasión. El pago del anticipo es reembolsable (I) en un 80% cuando el
                 presente Contrato sea cancelado con 6 (seis) meses de anticipación a la fecha del Evento, (ii) en un
@@ -338,7 +332,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Firmas */}
-          <div className="grid grid-cols-2 gap-16 mt-2">
+          <div className="grid grid-cols-2 gap-8 mt-2">
             <div>
               <div className="border-t-2 border-[#C8A951] pt-4">
                 <p className="font-bold text-sm">{contrato.cliente_nombre}</p>

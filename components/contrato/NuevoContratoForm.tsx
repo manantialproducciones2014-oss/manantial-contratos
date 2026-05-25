@@ -20,7 +20,6 @@ type Fields = {
   cliente_nombre: string
   cliente_dni: string
   cliente_telefono: string
-  cliente_email: string
   cliente_direccion: string
   cliente_localidad: string
   cliente_cp: string
@@ -54,7 +53,6 @@ export default function NuevoContratoForm({ combos }: { combos: Combo[] }) {
     cliente_nombre: '',
     cliente_dni: '',
     cliente_telefono: '',
-    cliente_email: '',
     cliente_direccion: '',
     cliente_localidad: '',
     cliente_cp: '',
@@ -118,7 +116,6 @@ export default function NuevoContratoForm({ combos }: { combos: Combo[] }) {
           cliente_nombre: fields.cliente_nombre,
           cliente_dni: fields.cliente_dni,
           cliente_telefono: fields.cliente_telefono,
-          cliente_email: fields.cliente_email,
           cliente_direccion: fields.cliente_direccion,
           cliente_localidad: fields.cliente_localidad,
           cliente_cp: fields.cliente_cp,
@@ -275,15 +272,6 @@ export default function NuevoContratoForm({ combos }: { combos: Combo[] }) {
                   required
                   value={fields.cliente_telefono}
                   onChange={(e) => set('cliente_telefono', e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className={labelClass}>Email</label>
-                <input
-                  type="email"
-                  value={fields.cliente_email}
-                  onChange={(e) => set('cliente_email', e.target.value)}
                   className={inputClass}
                 />
               </div>
