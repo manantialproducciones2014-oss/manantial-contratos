@@ -6,6 +6,7 @@ import {
   obtenerTodasLasGalerias,
   actualizarGaleriaItem,
   eliminarGaleriaItem,
+  obtenerArchivosGoogle,
   type GaleriaItem,
 } from '@/app/actions/galeria'
 import { useEffect } from 'react'
@@ -24,6 +25,10 @@ export default function GaleriaPage() {
   const [items, setItems] = useState<GaleriaItem[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [archivosGoogle, setArchivosGoogle] = useState<
+    Array<{ id: string; nombre: string; tipo: string; url: string }>
+  >([])
+  const [loadingGoogle, setLoadingGoogle] = useState(false)
 
   const [form, setForm] = useState<{
     titulo: string
@@ -43,6 +48,7 @@ export default function GaleriaPage() {
 
   useEffect(() => {
     loadItems()
+    loadArchivosGoogle()
   }, [])
 
   async function loadItems() {
@@ -54,6 +60,18 @@ export default function GaleriaPage() {
       setError(err instanceof Error ? err.message : 'Error al cargar galería')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function loadArchivosGoogle() {
+    try {
+      setLoadingGoogle(true)
+      const archivos = await obtenerArchivosGoogle()
+      setArchivosGoogle(archivos)
+    } catch (err) {
+      console.error('Error cargando archivos de Google Drive:', err)
+    } finally {
+      setLoadingGoogle(false)
     }
   }
 
@@ -196,7 +214,38 @@ export default function GaleriaPage() {
           </div>
 
           <div className="sm:col-span-2">
-            <label className={labelClass}>URL (Google Drive o YouTube) *</label>
+            <label className={labelClass}>Seleccionar de Google Drive</label>
+            {loadingGoogle ? (
+              <p className="text-sm text-gray-400">Cargando archivos...</p>
+            ) : archivosGoogle.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                {archivosGoogle.map((archivo) => (
+                  <button
+                    key={archivo.id}
+                    type="button"
+                    onClick={() => {
+                      handleChange('contenido_url', archivo.url)
+                      handleChange('titulo', archivo.nombre)
+                    }}
+                    className={`p-3 border-2 rounded-lg text-left text-sm transition-colors ${
+                      form.contenido_url === archivo.url
+                        ? 'border-[#C8A951] bg-[#C8A951]/5'
+                        : 'border-gray-200 hover:border-[#C8A951]'
+                    }`}
+                  >
+                    <div className="font-medium text-[#0A0A0A] truncate">
+                      {archivo.tipo === 'imagen' ? '📸' : '▶'} {archivo.nombre}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 mb-4">No hay archivos en la carpeta</p>
+            )}
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className={labelClass}>O pegar URL (Google Drive o YouTube) *</label>
             <input
               type="url"
               value={form.contenido_url}
@@ -205,7 +254,7 @@ export default function GaleriaPage() {
               placeholder="https://drive.google.com/file/d/... o https://www.youtube.com/watch?v=..."
             />
             <p className="text-xs text-gray-400 mt-1">
-              Pega el link compartido de Drive o YouTube
+              Pega el link compartido de Drive o YouTube si prefieres
             </p>
           </div>
 
