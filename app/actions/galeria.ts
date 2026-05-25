@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
+import { google } from 'googleapis'
 
 export type GaleriaItem = {
   id: string
@@ -107,4 +108,46 @@ export async function obtenerTodasLasGalerias(): Promise<GaleriaItem[]> {
   if (error) throw new Error(error.message)
 
   return data || []
+}
+
+export async function obtenerArchivosGoogle(): Promise<
+  Array<{ id: string; nombre: string; tipo: string; url: string }>
+> {
+  try {
+    const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
+    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
+
+    if (!serviceAccountJson || !folderId) {
+      throw new Error('Credenciales de Google Drive no configuradas')
+    }
+
+    const serviceAccount = JSON.parse(serviceAccountJson)
+
+    const auth = new google.auth.GoogleAuth({
+      credentials: serviceAccount,
+      scopes: ['https://www.googleapis.com/auth/drive'],
+    })
+
+    const drive = google.drive({ version: 'v3', auth })
+
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents and (mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/webp' or mimeType='video/mp4') and trashed=false`,
+      spaces: 'drive',
+      fields: 'files(id, name, mimeType, webContentLink)',
+      pageSize: 100,
+    })
+
+    const files = response.data.files || []
+
+    return files.map((file) => ({
+      id: file.id || '',
+      nombre: file.name || '',
+      tipo: file.mimeType?.startsWith('image') ? 'imagen' : 'video',
+      url: `https://drive.google.com/file/d/${file.id}/preview`,
+    }))
+  } catch (error) {
+    throw new Error(
+      `Error al obtener archivos de Google Drive: ${error instanceof Error ? error.message : 'Error desconocido'}`
+    )
+  }
 }
