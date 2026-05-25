@@ -25,10 +25,17 @@ export default function GaleriaPage() {
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    titulo: string
+    categoria: 'xv' | 'boda' | 'empresarial'
+    tipo_contenido: 'foto' | 'resumen' | 'plataforma360'
+    contenido_url: string
+    fecha: string
+    descripcion: string
+  }>({
     titulo: '',
-    categoria: 'xv' as const,
-    tipo_contenido: 'foto' as const,
+    categoria: 'xv',
+    tipo_contenido: 'foto',
     contenido_url: '',
     fecha: new Date().toISOString().split('T')[0],
     descripcion: '',
@@ -75,8 +82,8 @@ export default function GaleriaPage() {
 
         setForm({
           titulo: '',
-          categoria: 'xv',
-          tipo_contenido: 'foto',
+          categoria: 'xv' as const,
+          tipo_contenido: 'foto' as const,
           contenido_url: '',
           fecha: new Date().toISOString().split('T')[0],
           descripcion: '',
@@ -238,8 +245,8 @@ export default function GaleriaPage() {
                 setEditingId(null)
                 setForm({
                   titulo: '',
-                  categoria: 'xv',
-                  tipo_contenido: 'foto',
+                  categoria: 'xv' as const,
+                  tipo_contenido: 'foto' as const,
                   contenido_url: '',
                   fecha: new Date().toISOString().split('T')[0],
                   descripcion: '',
