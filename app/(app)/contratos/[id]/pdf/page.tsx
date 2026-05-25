@@ -67,10 +67,10 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
         {/* Banda superior */}
         <div className="h-2 bg-[#C8A951]" />
 
-        <div className="px-8 pt-3 pb-6">
+        <div className="px-8 pt-1 pb-6">
 
           {/* Encabezado */}
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex items-start justify-between mb-1">
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
