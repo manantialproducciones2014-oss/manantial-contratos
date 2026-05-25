@@ -76,7 +76,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <img
                 src="/manantial fotos videos con sombrita.png"
                 alt="Manantial Producciones"
-                className="h-36 w-auto object-contain"
+                className="h-20 w-auto object-contain"
               />
             </div>
             <div className="text-right">
@@ -104,31 +104,31 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                   Datos del Cliente
                 </h2>
               </div>
-              <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
+              <div className="border border-t-0 border-gray-200 rounded-b-lg p-2">
                 <table className="w-full">
                   <tbody>
                     <tr>
-                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Nombre</td>
-                      <td className="text-sm font-medium py-1">{contrato.cliente_nombre}</td>
+                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Nombre</td>
+                      <td className="text-sm font-medium py-0.5">{contrato.cliente_nombre}</td>
                     </tr>
                     <tr>
-                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">DNI</td>
-                      <td className="text-sm font-medium py-1">{contrato.cliente_dni}</td>
+                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">DNI</td>
+                      <td className="text-sm font-medium py-0.5">{contrato.cliente_dni}</td>
                     </tr>
                     <tr>
-                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Teléfono</td>
-                      <td className="text-sm font-medium py-1">{contrato.cliente_telefono}</td>
+                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Teléfono</td>
+                      <td className="text-sm font-medium py-0.5">{contrato.cliente_telefono}</td>
                     </tr>
                     {contrato.cliente_direccion && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Dirección</td>
-                        <td className="text-sm font-medium py-1">{contrato.cliente_direccion}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Dirección</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.cliente_direccion}</td>
                       </tr>
                     )}
                     {contrato.cliente_localidad && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Localidad</td>
-                        <td className="text-sm font-medium py-1">{contrato.cliente_localidad}{contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Localidad</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.cliente_localidad}{contrato.cliente_cp ? ` (${contrato.cliente_cp})` : ''}</td>
                       </tr>
                     )}
                   </tbody>
@@ -142,47 +142,47 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                   Datos del Evento
                 </h2>
               </div>
-              <div className="border border-t-0 border-gray-200 rounded-b-lg p-4">
+              <div className="border border-t-0 border-gray-200 rounded-b-lg p-2">
                 <table className="w-full">
                   <tbody>
                     <tr>
-                      <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Tipo</td>
-                      <td className="text-sm font-medium py-1">{contrato.tipo_evento}</td>
+                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Tipo</td>
+                      <td className="text-sm font-medium py-0.5">{contrato.tipo_evento}</td>
                     </tr>
                     {contrato.evento_nombre && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Festejada</td>
-                        <td className="text-sm font-medium py-1">{contrato.evento_nombre}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Festejada</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.evento_nombre}</td>
                       </tr>
                     )}
                     {contrato.evento_fecha && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Fecha</td>
-                        <td className="text-sm font-medium py-1">{formatDate(contrato.evento_fecha)}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Fecha</td>
+                        <td className="text-sm font-medium py-0.5">{formatDate(contrato.evento_fecha)}</td>
                       </tr>
                     )}
                     {contrato.evento_lugar && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Lugar</td>
-                        <td className="text-sm font-medium py-1">{contrato.evento_lugar}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Lugar</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.evento_lugar}</td>
                       </tr>
                     )}
                     {contrato.evento_direccion && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Dirección</td>
-                        <td className="text-sm font-medium py-1">{contrato.evento_direccion}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Dirección</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.evento_direccion}</td>
                       </tr>
                     )}
                     {contrato.evento_horario_desde && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Horario</td>
-                        <td className="text-sm font-medium py-1">{contrato.evento_horario_desde} a {contrato.evento_horario_hasta}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Horario</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.evento_horario_desde} a {contrato.evento_horario_hasta}</td>
                       </tr>
                     )}
                     {contrato.evento_invitados && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-1 pr-3 align-top w-20">Invitados</td>
-                        <td className="text-sm font-medium py-1">{contrato.evento_invitados}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Invitados</td>
+                        <td className="text-sm font-medium py-0.5">{contrato.evento_invitados}</td>
                       </tr>
                     )}
                   </tbody>
