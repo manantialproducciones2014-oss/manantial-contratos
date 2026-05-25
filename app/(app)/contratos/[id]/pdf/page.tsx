@@ -67,7 +67,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
         {/* Banda superior */}
         <div className="h-2 bg-[#C8A951]" />
 
-        <div className="px-8 py-6">
+        <div className="px-8 pt-8 pb-6">
 
           {/* Encabezado */}
           <div className="flex items-start justify-between mb-6">
