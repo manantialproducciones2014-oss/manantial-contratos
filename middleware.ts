@@ -33,7 +33,10 @@ export async function middleware(request: NextRequest) {
   const isPublic =
     pathname.startsWith('/login') || pathname.startsWith('/auth') || pathname.startsWith('/portfolio')
 
-  if (!user && !isPublic) {
+  // Dev access bypass for testing
+  const devCode = request.cookies.get('dev-code')?.value === 'manantial2026'
+
+  if (!user && !isPublic && !devCode) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
