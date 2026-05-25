@@ -24,27 +24,44 @@ export async function GET() {
   const email = 'manantialproducciones@hotmail.com'
 
   try {
-    const { data: existingUser } = await supabase.auth.admin.getUserById(
-      Buffer.from(email).toString('base64').slice(0, 36)
-    )
+    const { data: userData, error: userError } = await supabase.auth.admin.createUser({
+      email,
+      email_confirm: true,
+    })
 
-    const { data, error } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
-      email: email,
-      options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
-      },
+    if (userError && !userError.message.includes('already exists')) {
+      throw userError
+    }
+
+    const userId = userData?.user?.id
+
+    if (!userId) {
+      const { data: users } = await supabase.auth.admin.listUsers()
+      const user = users?.users.find(u => u.email === email)
+      if (!user) throw new Error('No user found')
+    }
+
+    const { data, error } = await supabase.auth.admin.createSession({
+      user_id: userData?.user?.id || userId,
     })
 
     if (error) throw error
 
-    if (data?.properties?.action_link) {
-      return NextResponse.redirect(data.properties.action_link)
-    }
+    const response = NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/`)
 
-    return NextResponse.json({ error: 'No action link generated' }, { status: 500 })
+    response.cookies.set('sb-access-token', data?.session?.access_token || '', {
+      maxAge: 60 * 60 * 24 * 365,
+      path: '/',
+    })
+
+    response.cookies.set('sb-refresh-token', data?.session?.refresh_token || '', {
+      maxAge: 60 * 60 * 24 * 365,
+      path: '/',
+    })
+
+    return response
   } catch (err) {
     console.error('Dev login error:', err)
-    return NextResponse.json({ error: 'Login failed' }, { status: 500 })
+    return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
