@@ -7,6 +7,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <span className="text-white font-bold tracking-tight">Manantial</span>
           <div className="flex gap-6">
+            <a
+              href="https://manantial-web.manantialproducciones2014.workers.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-[#C8A951] text-sm transition-colors"
+            >
+              Web
+            </a>
             <Link
               href="/"
               className="text-gray-400 hover:text-[#C8A951] text-sm transition-colors"

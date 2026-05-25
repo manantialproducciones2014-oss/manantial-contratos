@@ -29,11 +29,18 @@ export default function Portfolio() {
       }}>
         <h1 style={{ fontSize: '2.5em', marginBottom: '10px' }}>✦ MANANTIAL PRODUCCIONES ✦</h1>
         <p style={{ fontSize: '1.1em', color: '#F5F0E8' }}>Producción de Eventos Premium</p>
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
+          <a href="https://manantial-web.manantialproducciones2014.workers.dev/" target="_blank" rel="noopener noreferrer" style={{
+            color: '#C8A951',
+            textDecoration: 'none',
+            fontSize: '0.95em',
+            fontWeight: '600',
+          }}>
+            🌐 Ir a Web
+          </a>
           <Link href="/" style={{
             color: '#C8A951',
             textDecoration: 'none',
-            marginRight: '20px',
             fontSize: '0.95em',
             fontWeight: '600',
           }}>
