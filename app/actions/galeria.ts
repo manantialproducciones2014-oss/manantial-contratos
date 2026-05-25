@@ -113,7 +113,7 @@ export async function obtenerArchivosGoogle(): Promise<
   Array<{ id: string; nombre: string; tipo: string; url: string }>
 > {
   try {
-    const { google } = await import('googleapis')
+    const { google } = require('googleapis')
 
     const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
@@ -162,7 +162,7 @@ function extractFolderId(url: string): string {
 async function listFilesFromFolder(
   folderId: string
 ): Promise<Array<{ id: string; nombre: string; tipo: string }>> {
-  const { google } = await import('googleapis')
+  const { google } = require('googleapis')
 
   const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
   if (!serviceAccountJson) {
