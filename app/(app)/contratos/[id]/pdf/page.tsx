@@ -334,7 +334,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Firmas */}
-          <div className="grid grid-cols-2 gap-8 mt-2">
+          <div className="grid grid-cols-2 gap-8 mt-8">
             <div>
               <div className="border-t-2 border-[#C8A951] pt-4">
                 <p className="font-bold text-sm">{contrato.cliente_nombre}</p>
