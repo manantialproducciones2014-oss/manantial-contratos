@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
-import { google } from 'googleapis'
 
 export type GaleriaItem = {
   id: string
@@ -114,6 +113,8 @@ export async function obtenerArchivosGoogle(): Promise<
   Array<{ id: string; nombre: string; tipo: string; url: string }>
 > {
   try {
+    const { google } = await import('googleapis')
+
     const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
 
