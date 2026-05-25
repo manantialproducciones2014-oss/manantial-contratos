@@ -113,85 +113,36 @@ export async function obtenerArchivosGoogle(): Promise<
   Array<{ id: string; nombre: string; tipo: string; url: string }>
 > {
   try {
-    const { google } = require('googleapis')
-
-    const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
-
-    if (!serviceAccountJson || !folderId) {
-      throw new Error('Credenciales de Google Drive no configuradas')
+    if (!folderId) {
+      throw new Error('Carpeta de Google Drive no configurada')
     }
 
-    const serviceAccount = JSON.parse(serviceAccountJson)
-
-    const auth = new google.auth.GoogleAuth({
-      credentials: serviceAccount,
-      scopes: ['https://www.googleapis.com/auth/drive'],
+    const response = await fetch('/api/galeria/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folderUrl: `https://drive.google.com/drive/folders/${folderId}` }),
     })
 
-    const drive = google.drive({ version: 'v3', auth })
+    if (!response.ok) {
+      throw new Error('Error al obtener archivos de Google Drive')
+    }
 
-    const response = await drive.files.list({
-      q: `'${folderId}' in parents and (mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/webp' or mimeType='video/mp4') and trashed=false`,
-      spaces: 'drive',
-      fields: 'files(id, name, mimeType, webContentLink)',
-      pageSize: 100,
-    })
+    const { archivos } = await response.json()
 
-    const files = response.data.files || []
-
-    return files.map((file) => ({
-      id: file.id || '',
-      nombre: file.name || '',
-      tipo: file.mimeType?.startsWith('image') ? 'imagen' : 'video',
-      url: `https://drive.google.com/file/d/${file.id}/preview`,
-    }))
+    return archivos.map(
+      (file: { id: string; nombre: string; tipo: string }) => ({
+        id: file.id,
+        nombre: file.nombre,
+        tipo: file.tipo === 'imagen' ? 'imagen' : 'video',
+        url: `https://drive.google.com/file/d/${file.id}/preview`,
+      })
+    )
   } catch (error) {
     throw new Error(
       `Error al obtener archivos de Google Drive: ${error instanceof Error ? error.message : 'Error desconocido'}`
     )
   }
-}
-
-function extractFolderId(url: string): string {
-  const match = url.match(/\/folders\/([a-zA-Z0-9-_]+)/)
-  if (match) return match[1]
-  return url
-}
-
-async function listFilesFromFolder(
-  folderId: string
-): Promise<Array<{ id: string; nombre: string; tipo: string }>> {
-  const { google } = require('googleapis')
-
-  const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
-  if (!serviceAccountJson) {
-    throw new Error('Credenciales de Google Drive no configuradas')
-  }
-
-  const serviceAccount = JSON.parse(serviceAccountJson)
-
-  const auth = new google.auth.GoogleAuth({
-    credentials: serviceAccount,
-    scopes: ['https://www.googleapis.com/auth/drive'],
-  })
-
-  const drive = google.drive({ version: 'v3', auth })
-
-  const response = await drive.files.list({
-    q: `'${folderId}' in parents and (mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/webp' or mimeType='video/mp4') and trashed=false`,
-    spaces: 'drive',
-    fields: 'files(id, name, mimeType)',
-    pageSize: 100,
-  })
-
-  const files = response.data.files || []
-
-  return files.map((file) => ({
-    id: file.id || '',
-    nombre: file.name || '',
-    tipo: file.mimeType?.startsWith('image') ? 'foto' : 'resumen',
-  }))
 }
 
 export async function importarCarpetaGoogle(input: {
@@ -202,8 +153,20 @@ export async function importarCarpetaGoogle(input: {
   fecha: string
 }): Promise<{ creadas: number; errores: number }> {
   try {
-    const folderId = extractFolderId(input.folderUrl)
-    const archivos = await listFilesFromFolder(folderId)
+    const response = await fetch(
+      `${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/galeria/import`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderUrl: input.folderUrl }),
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Error al listar archivos de la carpeta')
+    }
+
+    const { archivos } = await response.json()
 
     let creadas = 0
     let errores = 0
