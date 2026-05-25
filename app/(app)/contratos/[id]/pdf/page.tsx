@@ -81,7 +81,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div className="text-right">
-              <div className="inline-block border-2 border-[#1E3558] px-6 py-3 text-right mt-2">
+              <div className="inline-block border-2 border-[#1E3558] px-6 py-3 text-right mt-8">
                 <p className="text-xs font-bold text-[#1E3558] uppercase tracking-widest">
                   Contrato {contrato.numero}
                 </p>
