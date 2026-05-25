@@ -88,14 +88,6 @@ export default async function Portfolio() {
             fontWeight: '700',
             transition: 'all 0.3s',
           }}
-          onMouseEnter={(e) => {
-            ;(e.currentTarget as HTMLAnchorElement).style.background = '#E8C961'
-            ;(e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.05)'
-          }}
-          onMouseLeave={(e) => {
-            ;(e.currentTarget as HTMLAnchorElement).style.background = '#C8A951'
-            ;(e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)'
-          }}
         >
           Solicitar Presupuesto
         </Link>
