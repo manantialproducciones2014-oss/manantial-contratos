@@ -67,10 +67,10 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
         {/* Banda superior */}
         <div className="h-2 bg-[#C8A951]" />
 
-        <div className="px-8 pt-8 pb-6">
+        <div className="px-8 pt-3 pb-6">
 
           {/* Encabezado */}
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start justify-between mb-3">
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -91,7 +91,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Divisor */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-3">
             <div className="h-px flex-1 bg-gray-200" />
             <div className="h-1 w-10 bg-[#C8A951] rounded-full" />
             <div className="h-px flex-1 bg-gray-200" />
