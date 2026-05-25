@@ -73,7 +73,11 @@ export async function GET() {
       throw new Error(sessionData.msg || 'Failed to create session')
     }
 
-    const response = NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/`)
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://manantial-contratos.vercel.app'
+
+    const response = NextResponse.redirect(`${siteUrl}/`)
 
     response.cookies.set('sb-access-token', sessionData.access_token, {
       httpOnly: false,
