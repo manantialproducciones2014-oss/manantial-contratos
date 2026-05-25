@@ -67,7 +67,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
         {/* Banda superior */}
         <div className="h-2 bg-[#C8A951]" />
 
-        <div className="px-8 pt-1 pb-6">
+        <div className="px-8 pt-0 pb-6">
 
           {/* Encabezado */}
           <div className="flex items-start justify-between mb-1">
@@ -81,7 +81,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div className="text-right">
-              <div className="inline-block border-2 border-[#1E3558] px-6 py-3 text-right">
+              <div className="inline-block border-2 border-[#1E3558] px-6 py-3 text-right mt-2">
                 <p className="text-xs font-bold text-[#1E3558] uppercase tracking-widest">
                   Contrato {contrato.numero}
                 </p>
