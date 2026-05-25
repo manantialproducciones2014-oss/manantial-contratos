@@ -76,7 +76,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <img
                 src="/manantial fotos videos con sombrita.png"
                 alt="Manantial Producciones"
-                style={{ height: '172px' }}
+                style={{ height: '184px' }}
                 className="w-auto object-contain"
               />
             </div>
@@ -293,7 +293,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                   Responsable del Evento
                 </h2>
               </div>
-              <table className="w-full border border-t-0 border-gray-300 rounded-b-lg overflow-hidden text-xs">
+              <table className="w-full border border-gray-300 rounded-lg overflow-hidden text-xs">
                 <tbody>
                   <tr className="border-b border-gray-200">
                     <td className="px-2 py-1 border-r border-gray-200 text-xs text-gray-500">Nombre</td>
