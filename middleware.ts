@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
   const isPublic =
-    pathname.startsWith('/login') || pathname.startsWith('/auth') || pathname.startsWith('/portfolio')
+    pathname.startsWith('/login') || pathname.startsWith('/auth') || pathname.startsWith('/portfolio') || pathname.startsWith('/quick-access')
 
   // Dev access bypass for testing
   const devCode = request.cookies.get('dev-code')?.value === 'manantial2026'
