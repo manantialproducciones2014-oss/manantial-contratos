@@ -2,14 +2,14 @@
 
 import { createClient } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
+import { google } from 'googleapis'
 
 export type GaleriaItem = {
   id: string
   titulo: string
   categoria: 'xv' | 'boda' | 'empresarial'
-  tipo_contenido: 'foto' | 'resumen' | 'plataforma360'
+  fotos: string[]
   fecha: string
-  contenido_url: string
   descripcion: string | null
   orden: number
   activo: boolean
@@ -19,10 +19,46 @@ export type GaleriaItem = {
 type CreateGaleriaInput = {
   titulo: string
   categoria: 'xv' | 'boda' | 'empresarial'
-  tipo_contenido: 'foto' | 'resumen' | 'plataforma360'
-  contenido_url: string
+  fotos: string[]
   fecha: string
   descripcion?: string
+}
+
+function extractFolderId(url: string): string {
+  const match = url.match(/\/folders\/([a-zA-Z0-9-_]+)/)
+  if (match) return match[1]
+  return url
+}
+
+async function listFilesFromFolder(folderId: string) {
+  const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
+  if (!serviceAccountJson) {
+    throw new Error('Credenciales de Google Drive no configuradas')
+  }
+
+  const serviceAccount = JSON.parse(serviceAccountJson)
+
+  const auth = new google.auth.GoogleAuth({
+    credentials: serviceAccount,
+    scopes: ['https://www.googleapis.com/auth/drive'],
+  })
+
+  const drive = google.drive({ version: 'v3', auth })
+
+  const response = await drive.files.list({
+    q: `'${folderId}' in parents and (mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/webp' or mimeType='video/mp4') and trashed=false`,
+    spaces: 'drive',
+    fields: 'files(id, name, mimeType)',
+    pageSize: 100,
+  })
+
+  const files = response.data.files || []
+
+  return files.map((file) => ({
+    id: file.id || '',
+    nombre: file.name || '',
+    tipo: file.mimeType?.startsWith('image') ? 'imagen' : 'video',
+  }))
 }
 
 export async function crearGaleriaItem(input: CreateGaleriaInput) {
@@ -33,9 +69,8 @@ export async function crearGaleriaItem(input: CreateGaleriaInput) {
     .insert({
       titulo: input.titulo,
       categoria: input.categoria,
-      tipo_contenido: input.tipo_contenido,
+      fotos: input.fotos,
       fecha: input.fecha,
-      contenido_url: input.contenido_url,
       descripcion: input.descripcion || null,
       activo: true,
     })
@@ -118,24 +153,14 @@ export async function obtenerArchivosGoogle(): Promise<
       throw new Error('Carpeta de Google Drive no configurada')
     }
 
-    const response = await fetch('/api/galeria/import', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ folderUrl: `https://drive.google.com/drive/folders/${folderId}` }),
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al obtener archivos de Google Drive')
-    }
-
-    const { archivos } = await response.json()
+    const archivos = await listFilesFromFolder(folderId)
 
     return archivos.map(
-      (file: { id: string; nombre: string; tipo: string }) => ({
+      (file) => ({
         id: file.id,
         nombre: file.nombre,
         tipo: file.tipo === 'imagen' ? 'imagen' : 'video',
-        url: `https://drive.google.com/file/d/${file.id}/preview`,
+        url: `/api/galeria/preview/${file.id}`,
       })
     )
   } catch (error) {
@@ -149,48 +174,30 @@ export async function importarCarpetaGoogle(input: {
   folderUrl: string
   titulo: string
   categoria: 'xv' | 'boda' | 'empresarial'
-  tipoContenido: 'foto' | 'resumen' | 'plataforma360'
   fecha: string
-}): Promise<{ creadas: number; errores: number }> {
+}): Promise<void> {
   try {
-    const response = await fetch(
-      `${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/galeria/import`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ folderUrl: input.folderUrl }),
-      }
+    const folderId = extractFolderId(input.folderUrl)
+    const archivos = await listFilesFromFolder(folderId)
+
+    if (archivos.length === 0) {
+      throw new Error('La carpeta no contiene archivos válidos')
+    }
+
+    const fotos = archivos.map(
+      (file) => `/api/galeria/preview/${file.id}`
     )
 
-    if (!response.ok) {
-      throw new Error('Error al listar archivos de la carpeta')
-    }
-
-    const { archivos } = await response.json()
-
-    let creadas = 0
-    let errores = 0
-
-    for (const archivo of archivos) {
-      try {
-        await crearGaleriaItem({
-          titulo: `${input.titulo} - ${archivo.nombre}`,
-          categoria: input.categoria,
-          tipo_contenido: input.tipoContenido,
-          contenido_url: `https://drive.google.com/file/d/${archivo.id}/preview`,
-          fecha: input.fecha,
-          descripcion: '',
-        })
-        creadas++
-      } catch (err) {
-        errores++
-      }
-    }
+    await crearGaleriaItem({
+      titulo: input.titulo,
+      categoria: input.categoria,
+      fotos: fotos,
+      fecha: input.fecha,
+      descripcion: '',
+    })
 
     revalidatePath('/portfolio')
     revalidatePath('/(app)/galeria')
-
-    return { creadas, errores }
   } catch (error) {
     throw new Error(
       `Error al importar carpeta: ${error instanceof Error ? error.message : 'Error desconocido'}`
