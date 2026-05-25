@@ -76,7 +76,8 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <img
                 src="/manantial fotos videos con sombrita.png"
                 alt="Manantial Producciones"
-                className="h-50 w-auto object-contain"
+                style={{ height: '172px' }}
+                className="w-auto object-contain"
               />
             </div>
             <div className="text-right">
