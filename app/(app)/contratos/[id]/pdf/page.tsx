@@ -76,7 +76,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
               <img
                 src="/manantial fotos videos con sombrita.png"
                 alt="Manantial Producciones"
-                className="h-20 w-auto object-contain"
+                className="h-32 w-auto object-contain"
               />
             </div>
             <div className="text-right">
@@ -334,7 +334,7 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Firmas */}
-          <div className="grid grid-cols-2 gap-16 mt-8">
+          <div className="grid grid-cols-2 gap-16 mt-12">
             <div>
               <div className="border-t-2 border-[#C8A951] pt-4">
                 <p className="font-bold text-sm">{contrato.cliente_nombre}</p>
