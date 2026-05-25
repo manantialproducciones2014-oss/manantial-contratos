@@ -146,19 +146,15 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
                 <table className="w-full">
                   <tbody>
                     <tr>
-                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Tipo</td>
-                      <td className="text-sm font-medium py-0.5">{contrato.tipo_evento}</td>
+                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-16">Tipo</td>
+                      <td className="text-sm font-medium py-0.5 pr-8">{contrato.tipo_evento}</td>
+                      <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-16">Fecha</td>
+                      <td className="text-sm font-medium py-0.5">{contrato.evento_fecha ? formatDate(contrato.evento_fecha) : '—'}</td>
                     </tr>
                     {contrato.evento_nombre && (
                       <tr>
-                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Festejada</td>
-                        <td className="text-sm font-medium py-0.5">{contrato.evento_nombre}</td>
-                      </tr>
-                    )}
-                    {contrato.evento_fecha && (
-                      <tr>
-                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Fecha</td>
-                        <td className="text-sm font-medium py-0.5">{formatDate(contrato.evento_fecha)}</td>
+                        <td className="text-xs text-gray-400 py-0.5 pr-3 align-top w-20">Agasajada/os</td>
+                        <td colSpan={3} className="text-sm font-medium py-0.5">{contrato.evento_nombre}</td>
                       </tr>
                     )}
                     {contrato.evento_lugar && (
@@ -248,69 +244,75 @@ export default async function PdfPage({ params }: { params: { id: string } }) {
             </div>
           </div>
 
-          {/* Pagos */}
-          {pagosList.length > 0 && (
-            <div className="mb-6">
+          {/* Pagos y Responsable lado a lado */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* Pagos */}
+            {pagosList.length > 0 && (
+              <div>
+                <div className="bg-[#1E3558] px-3 py-1.5 rounded-t-lg">
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-white">
+                    Pagos Registrados
+                  </h2>
+                </div>
+                <div className="border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        {['Fecha','Método','Monto'].map(h => (
+                          <th key={h} className="text-left text-xs text-gray-400 font-medium px-2 py-1">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pagosList.map((p, i) => (
+                        <tr key={p.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}>
+                          <td className="px-2 py-1">{formatDate(p.fecha)}</td>
+                          <td className="px-2 py-1 capitalize text-gray-600">{p.metodo}</td>
+                          <td className="px-2 py-1 font-semibold text-green-700">{formatMoney(p.monto)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="border-t border-gray-200 bg-gray-50">
+                      <tr>
+                        <td colSpan={2} className="px-2 py-1 text-xs font-semibold text-right text-gray-600">Saldo</td>
+                        <td className={`px-2 py-1 font-bold text-sm ${saldo > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                          {formatMoney(saldo)}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Responsable del evento */}
+            <div>
               <div className="bg-[#1E3558] px-3 py-1.5 rounded-t-lg">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-white">
-                  Pagos Registrados
+                  Responsable del Evento
                 </h2>
               </div>
-              <div className="border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      {['Fecha','Método','Detalle','Monto'].map(h => (
-                        <th key={h} className="text-left text-xs text-gray-400 font-medium px-4 py-2">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pagosList.map((p, i) => (
-                      <tr key={p.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}>
-                        <td className="px-4 py-2">{formatDate(p.fecha)}</td>
-                        <td className="px-4 py-2 capitalize">{p.metodo}</td>
-                        <td className="px-4 py-2 text-gray-500">{p.anotacion ?? '—'}</td>
-                        <td className="px-4 py-2 font-semibold text-green-700">{formatMoney(p.monto)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot className="border-t border-gray-200 bg-gray-50">
-                    <tr>
-                      <td colSpan={3} className="px-4 py-2 text-sm font-semibold text-right text-gray-600">Saldo pendiente</td>
-                      <td className={`px-4 py-2 font-bold text-base ${saldo > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                        {formatMoney(saldo)}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
+              <table className="w-full border border-t-0 border-gray-300 rounded-b-lg overflow-hidden text-xs">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-2 py-1 border-r border-gray-200 text-xs text-gray-500">Nombre</td>
+                    <td className="px-2 py-1 font-medium">Andrés Zapata</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-2 py-1 border-r border-gray-200 text-xs text-gray-500">DNI</td>
+                    <td className="px-2 py-1 font-medium">36010684</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-2 py-1 border-r border-gray-200 text-xs text-gray-500">Teléfono</td>
+                    <td className="px-2 py-1 font-medium">0341 3125437</td>
+                  </tr>
+                  <tr>
+                    <td className="px-2 py-1 border-r border-gray-200 text-xs text-gray-500">Empresa</td>
+                    <td className="px-2 py-1 font-medium">Manantial Producciones</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          )}
-
-          {/* Responsable del evento */}
-          <div className="mb-6">
-            <div className="bg-[#1E3558] px-4 py-2 rounded-t-lg">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-white">
-                Responsable del Evento
-              </h2>
-            </div>
-            <table className="w-full border border-t-0 border-gray-300 rounded-b-lg overflow-hidden text-sm">
-              <tbody>
-                <tr className="border-b border-gray-200">
-                  <td className="px-4 py-2 border-r border-gray-200 w-24 text-xs text-gray-500">Nombre</td>
-                  <td className="px-4 py-2 border-r border-gray-200 font-medium w-1/3">Andrés Zapata</td>
-                  <td className="px-4 py-2 border-r border-gray-200 w-20 text-xs text-gray-500">DNI</td>
-                  <td className="px-4 py-2 font-medium">36010684</td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-2 border-r border-gray-200 text-xs text-gray-500">Teléfono</td>
-                  <td className="px-4 py-2 border-r border-gray-200 font-medium">0341 3125437</td>
-                  <td className="px-4 py-2 border-r border-gray-200 text-xs text-gray-500">Empresa</td>
-                  <td className="px-4 py-2 font-medium">Manantial Producciones</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
 
           {/* Términos */}
