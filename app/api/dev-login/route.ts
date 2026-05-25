@@ -1,60 +1,88 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const cookieStore = cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
   const email = 'manantialproducciones@hotmail.com'
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return NextResponse.json(
+      { error: 'Missing Supabase credentials in environment' },
+      { status: 500 }
+    )
+  }
 
   try {
-    const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-      email,
-      email_confirm: true,
-    })
+    const createUserResponse = await fetch(
+      `${supabaseUrl}/auth/v1/admin/users`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${serviceRoleKey}`,
+          apikey: serviceRoleKey,
+        },
+        body: JSON.stringify({
+          email,
+          email_confirm: true,
+          password: 'DevPassword123!',
+        }),
+      }
+    )
 
-    if (userError && !userError.message.includes('already exists')) {
-      throw userError
+    const userData = await createUserResponse.json()
+
+    if (!createUserResponse.ok && !userData.msg?.includes('already exists')) {
+      console.error('User creation failed:', userData)
+      throw new Error(userData.msg || 'Failed to create user')
     }
 
-    const userId = userData?.user?.id
+    const userId = userData.user?.id
 
     if (!userId) {
-      const { data: users } = await supabase.auth.admin.listUsers()
-      const user = users?.users.find(u => u.email === email)
-      if (!user) throw new Error('No user found')
+      const listResponse = await fetch(
+        `${supabaseUrl}/auth/v1/admin/users`,
+        {
+          headers: {
+            Authorization: `Bearer ${serviceRoleKey}`,
+            apikey: serviceRoleKey,
+          },
+        }
+      )
+      const users = await listResponse.json()
+      const foundUser = users.users?.find((u: any) => u.email === email)
+      if (!foundUser) throw new Error('User not found')
     }
 
-    const { data, error } = await supabase.auth.admin.createSession({
-      user_id: userData?.user?.id || userId,
-    })
+    const sessionResponse = await fetch(
+      `${supabaseUrl}/auth/v1/admin/users/${userData.user?.id || userId}/sessions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${serviceRoleKey}`,
+          apikey: serviceRoleKey,
+        },
+        body: JSON.stringify({}),
+      }
+    )
 
-    if (error) throw error
+    const sessionData = await sessionResponse.json()
+
+    if (!sessionResponse.ok) {
+      throw new Error(sessionData.msg || 'Failed to create session')
+    }
 
     const response = NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/`)
 
-    response.cookies.set('sb-access-token', data?.session?.access_token || '', {
+    response.cookies.set('sb-access-token', sessionData.access_token, {
+      httpOnly: false,
       maxAge: 60 * 60 * 24 * 365,
       path: '/',
     })
 
-    response.cookies.set('sb-refresh-token', data?.session?.refresh_token || '', {
+    response.cookies.set('sb-refresh-token', sessionData.refresh_token, {
+      httpOnly: false,
       maxAge: 60 * 60 * 24 * 365,
       path: '/',
     })
@@ -62,6 +90,9 @@ export async function GET() {
     return response
   } catch (err) {
     console.error('Dev login error:', err)
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Login failed' },
+      { status: 500 }
+    )
   }
 }
