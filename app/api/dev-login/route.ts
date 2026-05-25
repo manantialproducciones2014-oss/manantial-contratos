@@ -89,10 +89,27 @@ export async function GET() {
 
     return response
   } catch (err) {
-    console.error('Dev login error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Login failed' },
-      { status: 500 }
+    const errorMsg = err instanceof Error ? err.message : 'Login failed'
+    console.error('Dev login error:', errorMsg)
+
+    return new NextResponse(
+      `<!DOCTYPE html>
+      <html>
+        <head><title>Dev Login Error</title></head>
+        <body style="font-family: monospace; padding: 20px;">
+          <h1>❌ Dev Login Error</h1>
+          <pre style="background: #ffe6e6; padding: 10px; border-radius: 5px; color: red;">
+${errorMsg}
+          </pre>
+          <p style="font-size: 0.8em; color: #666;">
+            Verifica que <strong>SUPABASE_SERVICE_ROLE_KEY</strong> esté configurada en Vercel Settings → Environment Variables
+          </p>
+          <a href="/login" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #0A0A0A; color: #C8A951; text-decoration: none; border-radius: 5px;">
+            Volver a Login
+          </a>
+        </body>
+      </html>`,
+      { status: 500, headers: { 'Content-Type': 'text/html' } }
     )
   }
 }
