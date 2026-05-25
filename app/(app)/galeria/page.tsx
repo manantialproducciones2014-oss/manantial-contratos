@@ -7,6 +7,7 @@ import {
   actualizarGaleriaItem,
   eliminarGaleriaItem,
   obtenerArchivosGoogle,
+  importarCarpetaGoogle,
   type GaleriaItem,
 } from '@/app/actions/galeria'
 import { useEffect } from 'react'
@@ -29,6 +30,15 @@ export default function GaleriaPage() {
     Array<{ id: string; nombre: string; tipo: string; url: string }>
   >([])
   const [loadingGoogle, setLoadingGoogle] = useState(false)
+
+  const [importForm, setImportForm] = useState({
+    folderUrl: '',
+    titulo: '',
+    categoria: 'xv' as const,
+    tipoContenido: 'foto' as const,
+    fecha: new Date().toISOString().split('T')[0],
+  })
+  const [importingFolder, setImportingFolder] = useState(false)
 
   const [form, setForm] = useState<{
     titulo: string
@@ -139,6 +149,45 @@ export default function GaleriaPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  async function handleImportFolder(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setSuccess(null)
+
+    if (!importForm.folderUrl.trim()) return setError('El link de la carpeta es requerido')
+    if (!importForm.titulo.trim()) return setError('El título es requerido')
+
+    setImportingFolder(true)
+
+    try {
+      const result = await importarCarpetaGoogle({
+        folderUrl: importForm.folderUrl,
+        titulo: importForm.titulo,
+        categoria: importForm.categoria,
+        tipoContenido: importForm.tipoContenido,
+        fecha: importForm.fecha,
+      })
+
+      setSuccess(
+        `Importadas ${result.creadas} fotos${result.errores > 0 ? ` (${result.errores} con error)` : ''}`
+      )
+
+      setImportForm({
+        folderUrl: '',
+        titulo: '',
+        categoria: 'xv',
+        tipoContenido: 'foto',
+        fecha: new Date().toISOString().split('T')[0],
+      })
+
+      await loadItems()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al importar carpeta')
+    } finally {
+      setImportingFolder(false)
+    }
+  }
+
   const tipoLabel = {
     foto: '📸 Foto',
     resumen: '▶ Resumen',
@@ -155,7 +204,98 @@ export default function GaleriaPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-[#0A0A0A]">Galería</h1>
 
-      {/* Formulario */}
+      {/* Importar carpeta */}
+      <form onSubmit={handleImportFolder} className="bg-blue-50 rounded-xl p-6 border-2 border-blue-200 space-y-4">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-4">
+          ⚡ Importar carpeta completa
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Link de carpeta Google Drive *</label>
+            <input
+              type="url"
+              value={importForm.folderUrl}
+              onChange={(e) => setImportForm({ ...importForm, folderUrl: e.target.value })}
+              className={inputClass}
+              placeholder="https://drive.google.com/drive/folders/..."
+            />
+            <p className="text-xs text-gray-400 mt-1">Pega el link completo de la carpeta</p>
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Nombre base para las fotos *</label>
+            <input
+              type="text"
+              value={importForm.titulo}
+              onChange={(e) => setImportForm({ ...importForm, titulo: e.target.value })}
+              className={inputClass}
+              placeholder="ej: Sofia Garcia - XV Años"
+            />
+            <p className="text-xs text-gray-400 mt-1">Se agregará el nombre de cada foto</p>
+          </div>
+
+          <div>
+            <label className={labelClass}>Categoría *</label>
+            <select
+              value={importForm.categoria}
+              onChange={(e) =>
+                setImportForm({
+                  ...importForm,
+                  categoria: e.target.value as 'xv' | 'boda' | 'empresarial',
+                })
+              }
+              className={inputClass}
+            >
+              {['xv', 'boda', 'empresarial'].map((cat) => (
+                <option key={cat} value={cat}>
+                  {categoriaLabel[cat as keyof typeof categoriaLabel]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Tipo de contenido *</label>
+            <select
+              value={importForm.tipoContenido}
+              onChange={(e) =>
+                setImportForm({
+                  ...importForm,
+                  tipoContenido: e.target.value as 'foto' | 'resumen' | 'plataforma360',
+                })
+              }
+              className={inputClass}
+            >
+              {['foto', 'resumen', 'plataforma360'].map((tipo) => (
+                <option key={tipo} value={tipo}>
+                  {tipoLabel[tipo as keyof typeof tipoLabel]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Fecha *</label>
+            <input
+              type="date"
+              value={importForm.fecha}
+              onChange={(e) => setImportForm({ ...importForm, fecha: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={importingFolder}
+          className="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm"
+        >
+          {importingFolder ? 'Importando...' : '⚡ Importar carpeta'}
+        </button>
+      </form>
+
+      {/* Formulario individual */}
       <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 border border-gray-100 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
           {editingId ? 'Editar' : 'Agregar'} elemento
