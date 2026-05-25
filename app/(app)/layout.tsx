@@ -33,6 +33,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             >
               Portfolio
             </Link>
+            <Link
+              href="/galeria"
+              className="text-gray-400 hover:text-[#C8A951] text-sm transition-colors"
+            >
+              Galería
+            </Link>
           </div>
         </div>
       </nav>
