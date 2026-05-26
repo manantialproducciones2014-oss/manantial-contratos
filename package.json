@@ -10,6 +10,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.6.0",
     "@supabase/supabase-js": "^2.49.0",
+    "googleapis": "^172.0.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "next": "^14.2.0",
