@@ -32,3 +32,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Google API credentials (never commit these)
+*.apps.googleusercontent.com.json
+*-service-account.json
+manantia-galeria-*.json
+client_secret_*.json

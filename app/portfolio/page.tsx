@@ -75,8 +75,10 @@ export default async function Portfolio() {
         <p style={{ fontSize: '1.1em', marginBottom: '30px', color: '#F5F0E8' }}>
           Contamos con experiencia en los tres tipos de eventos. Llevamos tu visión al siguiente nivel.
         </p>
-        <Link
-          href="/nuevo"
+        <a
+          href="https://wa.me/543413125437?text=Hola%2C%20me%20interesa%20solicitar%20un%20presupuesto%20para%20mi%20evento."
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             display: 'inline-block',
             padding: '18px 50px',
@@ -90,7 +92,7 @@ export default async function Portfolio() {
           }}
         >
           Solicitar Presupuesto
-        </Link>
+        </a>
       </div>
 
       {/* Footer */}

@@ -193,6 +193,16 @@ export default function GaleriaPage() {
     })
   }
 
+  async function handleToggleActivo(id: string, currentActivo: boolean) {
+    try {
+      await actualizarGaleriaItem(id, { activo: !currentActivo })
+      setSuccess(currentActivo ? 'Galería ocultada del portfolio' : 'Galería visible en portfolio')
+      await loadItems()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar')
+    }
+  }
+
   async function handleDelete(id: string) {
     if (!confirm('¿Estás seguro de que querés eliminar esta galería?')) return
 
@@ -425,20 +435,24 @@ export default function GaleriaPage() {
                         onDragStart={(e) => handleDragStart(e, idx)}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, idx)}
-                        className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-move transition-colors ${
+                        className={`flex items-center gap-3 p-2 border-2 rounded-lg cursor-move transition-colors ${
                           draggedIndex === idx
                             ? 'border-[#C8A951] bg-[#C8A951]/5'
                             : 'border-gray-200 hover:border-[#C8A951]'
                         }`}
                       >
-                        <span className="text-lg">☰</span>
-                        <span className="flex-1 text-sm text-gray-600 truncate">
-                          {idx + 1}. Foto
+                        <span className="text-lg text-gray-400">☰</span>
+                        <div
+                          className="w-12 h-12 rounded bg-gray-100 flex-shrink-0 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${foto})` }}
+                        />
+                        <span className="flex-1 text-xs text-gray-500 truncate">
+                          {idx + 1}. {foto.split('/').pop()?.slice(0, 30) || 'Foto'}
                         </span>
                         <button
                           type="button"
                           onClick={() => removePhoto(idx)}
-                          className="text-red-500 hover:text-red-700 font-bold"
+                          className="text-red-500 hover:text-red-700 font-bold flex-shrink-0"
                         >
                           ✕
                         </button>
@@ -537,7 +551,9 @@ export default function GaleriaPage() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#C8A951] transition-colors"
+                className={`flex items-center justify-between p-4 border rounded-lg hover:border-[#C8A951] transition-colors ${
+                  item.activo ? 'border-gray-200' : 'border-gray-100 opacity-50'
+                }`}
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -556,6 +572,16 @@ export default function GaleriaPage() {
                 </div>
 
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => handleToggleActivo(item.id, item.activo)}
+                    className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                      item.activo
+                        ? 'bg-green-50 hover:bg-green-100 text-green-700'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-500'
+                    }`}
+                  >
+                    {item.activo ? 'Visible' : 'Oculto'}
+                  </button>
                   <button
                     onClick={() => openEditModal(item)}
                     className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors"
