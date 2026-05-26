@@ -19,7 +19,7 @@ export default function PortfolioClient({ initialItems }: PortfolioClientProps) 
   }, [activeCategory, initialItems])
 
   const filteredItems = useMemo(() => {
-    return filterGaleriaByMonthAndCategory(initialItems, activeCategory, activeMonth)
+    return filterGaleriaByMonthAndCategory(initialItems, activeCategory, activeMonth ?? undefined)
   }, [activeCategory, activeMonth, initialItems])
 
   const getThumbnail = (item: GaleriaItem): string => {
