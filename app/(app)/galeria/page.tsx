@@ -38,10 +38,15 @@ export default function GaleriaPage() {
   const [loadingGoogle, setLoadingGoogle] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
-  const [importForm, setImportForm] = useState({
+  const [importForm, setImportForm] = useState<{
+    folderUrl: string
+    titulo: string
+    categoria: 'xv' | 'boda' | 'empresarial'
+    fecha: string
+  }>({
     folderUrl: '',
     titulo: '',
-    categoria: 'xv' as const,
+    categoria: 'xv',
     fecha: new Date().toISOString().split('T')[0],
   })
   const [importingFolder, setImportingFolder] = useState(false)
