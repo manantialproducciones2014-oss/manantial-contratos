@@ -6,11 +6,13 @@ import { getMonthYear, getAvailableMonths, filterGaleriaByMonthAndCategory } fro
 
 interface PortfolioClientProps {
   initialItems: GaleriaItem[]
+  playfairClass?: string
 }
 
-export default function PortfolioClient({ initialItems }: PortfolioClientProps) {
+export default function PortfolioClient({ initialItems, playfairClass = '' }: PortfolioClientProps) {
   const [activeCategory, setActiveCategory] = useState('all')
   const [activeMonth, setActiveMonth] = useState<string | null>(null)
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null)
   const [selectedItem, setSelectedItem] = useState<GaleriaItem | null>(null)
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0)
 
@@ -67,14 +69,19 @@ export default function PortfolioClient({ initialItems }: PortfolioClientProps) 
   return (
     <>
       {/* Categories */}
-      <div style={{ padding: '60px 20px', textAlign: 'center', maxWidth: '1200px', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '2em', marginBottom: '40px', color: '#0A0A0A' }}>Nuestros Trabajos</h2>
+      <div style={{ padding: '70px 20px 40px', textAlign: 'center', maxWidth: '1300px', margin: '0 auto' }}>
+        <p style={{ fontSize: '0.75em', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#C8A951', marginBottom: '16px' }}>
+          GALERÍA
+        </p>
+        <h2 className={playfairClass} style={{ fontSize: 'clamp(1.6em, 4vw, 2.4em)', marginBottom: '48px', color: '#0A0A0A', fontStyle: 'italic' }}>
+          Nuestros Trabajos
+        </h2>
 
         {/* Category filter buttons */}
         <div
           style={{
             display: 'flex',
-            gap: '20px',
+            gap: '12px',
             justifyContent: 'center',
             flexWrap: 'wrap',
             marginBottom: '40px',
@@ -93,15 +100,17 @@ export default function PortfolioClient({ initialItems }: PortfolioClientProps) 
                 setActiveMonth(null)
               }}
               style={{
-                padding: '15px 30px',
-                fontSize: '1.1em',
-                border: `2px solid #C8A951`,
-                background: activeCategory === cat.value ? '#C8A951' : '#F5F0E8',
-                color: activeCategory === cat.value ? '#F5F0E8' : '#0A0A0A',
+                padding: '10px 28px',
+                fontSize: '0.82em',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                border: `1px solid #C8A951`,
+                background: activeCategory === cat.value ? '#C8A951' : 'transparent',
+                color: activeCategory === cat.value ? '#0A0A0A' : '#0A0A0A',
                 cursor: 'pointer',
-                borderRadius: '5px',
+                borderRadius: '2px',
                 fontWeight: '600',
-                transition: 'all 0.3s',
+                transition: 'all 0.25s',
               }}
             >
               {cat.label}
@@ -173,25 +182,27 @@ export default function PortfolioClient({ initialItems }: PortfolioClientProps) 
                 <div key={monthKey}>
                   {/* Month header */}
                   <h3
+                    className={playfairClass}
                     style={{
-                      fontSize: '1.5em',
-                      fontWeight: 'bold',
+                      fontSize: '1.3em',
+                      fontStyle: 'italic',
                       color: '#0A0A0A',
-                      marginTop: '50px',
-                      marginBottom: '30px',
-                      paddingTop: '30px',
-                      borderTop: '2px solid #E0D8D0',
+                      marginTop: '56px',
+                      marginBottom: '28px',
+                      paddingTop: '28px',
+                      borderTop: '1px solid #D8D0C4',
+                      opacity: 0.75,
                     }}
                   >
-                    📅 {monthLabel}
+                    {monthLabel}
                   </h3>
 
                   {/* Grid for this month */}
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                      gap: '30px',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+                      gap: '20px',
                       marginBottom: '60px',
                     }}
                   >
@@ -202,53 +213,49 @@ export default function PortfolioClient({ initialItems }: PortfolioClientProps) 
                           setSelectedItem(item)
                           setSelectedPhotoIndex(0)
                         }}
+                        onMouseEnter={() => setHoveredCardId(item.id)}
+                        onMouseLeave={() => setHoveredCardId(null)}
                         style={{
                           position: 'relative',
                           overflow: 'hidden',
-                          borderRadius: '10px',
-                          boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                          borderRadius: '4px',
+                          boxShadow: hoveredCardId === item.id
+                            ? '0 20px 50px rgba(0,0,0,0.35)'
+                            : '0 6px 24px rgba(0,0,0,0.15)',
                           cursor: 'pointer',
-                          transition: 'transform 0.3s',
-                        }}
-                        onMouseEnter={(e) => {
-                          ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(-10px)'
-                        }}
-                        onMouseLeave={(e) => {
-                          ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
+                          transition: 'box-shadow 0.35s ease',
                         }}
                       >
                         <div
                           style={{
                             width: '100%',
-                            height: '300px',
-                            background: '#ddd',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
+                            height: '400px',
                             backgroundImage: `url(${getThumbnail(item)})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
+                            transform: hoveredCardId === item.id ? 'scale(1.04)' : 'scale(1)',
+                            transition: 'transform 0.5s ease',
                           }}
-                        >
-                          {item.fotos.length > 1 && (
-                            <div
-                              style={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                background: 'rgba(0,0,0,0.7)',
-                                color: '#C8A951',
-                                padding: '5px 12px',
-                                borderRadius: '20px',
-                                fontSize: '0.9em',
-                                fontWeight: '600',
-                              }}
-                            >
-                              {item.fotos.length} fotos
-                            </div>
-                          )}
-                        </div>
+                        />
+
+                        {item.fotos.length > 1 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '14px',
+                              right: '14px',
+                              background: 'rgba(0,0,0,0.65)',
+                              color: '#C8A951',
+                              padding: '4px 12px',
+                              borderRadius: '2px',
+                              fontSize: '0.78em',
+                              letterSpacing: '0.08em',
+                              fontWeight: '600',
+                            }}
+                          >
+                            {item.fotos.length} fotos
+                          </div>
+                        )}
 
                         <div
                           style={{
@@ -256,14 +263,18 @@ export default function PortfolioClient({ initialItems }: PortfolioClientProps) 
                             bottom: '0',
                             left: '0',
                             right: '0',
-                            background: 'rgba(0,0,0,0.8)',
+                            background: 'linear-gradient(transparent, rgba(0,0,0,0.92))',
                             color: '#C8A951',
-                            padding: '20px',
+                            padding: '48px 24px 24px',
+                            transform: hoveredCardId === item.id ? 'translateY(0)' : 'translateY(100%)',
+                            transition: 'transform 0.35s ease',
                           }}
                         >
-                          <h3 style={{ fontSize: '1.2em', marginBottom: '5px' }}>{item.titulo}</h3>
-                          <p style={{ fontSize: '0.9em', color: '#F5F0E8' }}>
-                            {item.fecha} — {categoriaLabel[item.categoria]}
+                          <h3 className={playfairClass} style={{ fontSize: '1.25em', marginBottom: '6px', fontStyle: 'italic' }}>
+                            {item.titulo}
+                          </h3>
+                          <p style={{ fontSize: '0.8em', color: '#F5F0E8', opacity: 0.8, letterSpacing: '0.05em' }}>
+                            {item.fecha} · {categoriaLabel[item.categoria]}
                           </p>
                         </div>
                       </div>
