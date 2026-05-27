@@ -3,6 +3,15 @@ import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS })
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -61,7 +70,7 @@ export async function GET(request: NextRequest) {
         offset,
         timestamp: new Date().toISOString(),
       },
-    })
+    }, { headers: CORS })
   } catch (error) {
     console.error('Error fetching gallery:', error)
     return NextResponse.json(
@@ -69,7 +78,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : 'Error desconocido',
       },
-      { status: 500 }
+      { status: 500, headers: CORS }
     )
   }
 }
