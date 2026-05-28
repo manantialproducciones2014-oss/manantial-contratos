@@ -19,7 +19,7 @@ const labelClass = 'block text-sm font-medium text-gray-700 mb-1'
 
 const CATEGORIAS = ['xv', 'boda', 'empresarial', 'sesiones', 'videografia', 'espejo', 'plataforma360'] as const
 
-const categoriaLabel = {
+const categoriaLabel: Record<string, string> = {
   xv: 'XV Años',
   boda: 'Boda',
   empresarial: 'Empresarial',
