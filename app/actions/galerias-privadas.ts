@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase'
+import { createAdminClient } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 import { google } from 'googleapis'
 
@@ -57,7 +57,7 @@ function extractFolderId(url: string): string {
 
 export async function obtenerGaleriasPrivadas(): Promise<GaleriaPrivada[]> {
   try {
-    const supabase = createClient()
+    const supabase = createAdminClient()
     const { data, error } = await supabase
       .from('galerias_privadas')
       .select('*')
@@ -85,7 +85,7 @@ export async function crearGaleriaPrivada(input: {
       return { ok: false, error: 'La carpeta no contiene imágenes válidas (JPG, PNG o WebP)' }
     }
 
-    const supabase = createClient()
+    const supabase = createAdminClient()
     const { error } = await supabase.from('galerias_privadas').insert({
       titulo: input.titulo,
       tipo: input.tipo,
