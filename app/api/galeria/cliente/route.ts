@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const codigo = request.nextUrl.searchParams.get('codigo')
 
   if (!codigo) {
-    return NextResponse.json({ success: false, error: 'Código requerido' }, { status: 400, headers: CORS })
+    return NextResponse.json({ success: false, error: 'Código requerido' }, { headers: CORS })
   }
 
   const supabase = createClient(
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     .single()
 
   if (error || !data) {
-    return NextResponse.json({ success: false, error: 'Código incorrecto' }, { status: 404, headers: CORS })
+    return NextResponse.json({ success: false, error: 'Código incorrecto' }, { headers: CORS })
   }
 
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://manantial-contratos.vercel.app'
