@@ -36,7 +36,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/portfolio') ||
     pathname.startsWith('/quick-access') ||
     pathname.startsWith('/api/galeria/preview') ||
-    pathname.startsWith('/api/galeria/public')
+    pathname.startsWith('/api/galeria/public') ||
+    pathname.startsWith('/api/galeria/cliente')
 
   // Dev access bypass for testing
   const devCode = request.cookies.get('dev-code')?.value === 'manantial2026'
