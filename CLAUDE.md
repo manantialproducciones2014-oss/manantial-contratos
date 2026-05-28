@@ -1,33 +1,42 @@
 # Manantial Contratos
 
 ## ¿Qué es esto?
-App web para gestionar contratos y pagos de Manantial Producciones.
-Permite crear contratos seleccionando combos prediseñados, registrar
-pagos parciales de clientes e imprimir el contrato actualizado en PDF.
+App web para gestionar contratos, pagos y galería de Manantial Producciones.
+Permite crear contratos seleccionando combos prediseñados, registrar pagos
+parciales, imprimir el contrato en PDF, y administrar una galería de trabajos
+que se muestra públicamente en el portfolio y en la web institucional.
 
 ## Stack
 - Frontend + Backend: Next.js 14 con App Router, TypeScript, Tailwind CSS
 - Base de datos + Auth: Supabase (PostgreSQL)
 - Deploy: Vercel
 - PDF: página /pdf renderizada para impresión con window.print()
+- Google Drive: googleapis (service account) para importar fotos de carpetas
 
 ## Estructura del proyecto
 /
 ├── app/
-│   ├── (auth)/login/         → página de login
-│   ├── (app)/                → rutas protegidas
-│   │   ├── page.tsx          → historial de contratos
-│   │   ├── nuevo/            → crear contrato
-│   │   ├── contratos/[id]/   → detalle + pagos
-│   │   ├── contratos/[id]/pdf/ → vista imprimible
-│   │   └── combos/           → gestión de combos
+│   ├── (auth)/login/              → página de login
+│   ├── (app)/                     → rutas protegidas
+│   │   ├── page.tsx               → historial de contratos
+│   │   ├── nuevo/                 → crear contrato
+│   │   ├── contratos/[id]/        → detalle + pagos
+│   │   ├── contratos/[id]/pdf/    → vista imprimible
+│   │   ├── combos/                → gestión de combos
+│   │   └── galeria/               → admin de galería (CRUD + importar Drive)
+│   ├── portfolio/                 → portfolio público (sin auth)
+│   │   ├── page.tsx               → Server Component con font Playfair Display
+│   │   └── PortfolioClient.tsx    → filtros por categoría/mes, lightbox
+│   ├── api/
+│   │   ├── galeria/public/        → GET público con CORS (usado por la web)
+│   │   └── galeria/preview/[fileId]/ → proxy de imágenes desde Google Drive
+│   ├── actions/
+│   │   └── galeria.ts             → CRUD de galería + integración Google Drive
 │   └── layout.tsx
-├── components/
-│   ├── ui/                   → botones, inputs, modales
-│   └── contrato/             → formulario, tabla pagos, pdf
 ├── lib/
 │   ├── supabase.ts
-│   └── utils.ts
+│   ├── utils.ts
+│   └── galeria-helpers.ts         → helpers de fecha/mes para el portfolio
 └── CLAUDE.md
 
 ## Base de datos
@@ -66,6 +75,54 @@ pagos parciales de clientes e imprimir el contrato actualizado en PDF.
 - anotacion (text)
 - created_at (timestamp)
 
+### galeria
+- id (uuid, PK)
+- titulo (text) — ej: "Sofía García - XV Años"
+- categoria (text) — ver categorías abajo
+- fotos (text[]) — array de URLs relativas a /api/galeria/preview/[fileId]
+- fecha (date) — fecha del evento
+- descripcion (text, nullable)
+- orden (int) — para ordenamiento manual (no implementado en UI aún)
+- activo (boolean) — si aparece en el portfolio público
+- created_at (timestamp)
+
+## Categorías de galería
+- `xv` → XV Años (bodas en quince.html de la web)
+- `boda` → Boda (bodas.html)
+- `empresarial` → Empresarial
+- `sesiones` → Sesiones (sesiones.html)
+- `videografia` → Videografía (videografia.html)
+- `espejo` → Espejo Mágico (espejo.html)
+- `plataforma360` → Plataforma 360° (plataforma360.html)
+
+## Flujo de la galería
+1. Desde /galeria (admin), importás una carpeta de Google Drive con link
+2. La app lee los archivos con la API de Drive (service account)
+3. Guarda las URLs como /api/galeria/preview/[fileId] en Supabase
+4. El proxy /api/galeria/preview/[fileId] sirve las imágenes autenticando con Drive
+5. El portfolio público /portfolio muestra las galerías activas
+6. La web institucional (manantial-web) consume /api/galeria/public con CORS
+   para mostrar fotos en cada página según categoría
+
+## Web institucional (proyecto separado)
+Repo: github.com/manantialproducciones2014-oss/manantial-web
+URL: manantial-web.manantialproducciones2014.workers.dev
+Stack: HTML/CSS/JS estático en Cloudflare Workers
+
+Conexión con esta app:
+- index.html → sección "Últimos Eventos" carga los 6 más recientes de /api/galeria/public
+- bodas.html, quince.html, sesiones.html, etc. → cargan fotos de su categoría via js/galeria-dinamica.js
+- El navbar tiene link a /portfolio de esta app
+
+## Galería privada de cliente (feature pendiente)
+galeria-cliente.html en la web permite que un cliente acceda a su sesión
+de fotos completa con un código de acceso privado. El cliente ingresa su
+código, ve todas sus fotos y puede descargarlas. Actualmente usa galerias.js
+en el frontend — necesita backend para manejar los códigos y las galerías
+privadas (no mezcladas con la galería pública).
+Pendiente: conectar esto con Supabase para que los códigos se generen
+desde esta app al crear/entregar un evento.
+
 ## Términos y condiciones
 "El Cliente reconoce y acuerda que la Empresa se reserva el derecho
 de utilizar dichas imágenes y video en cualquier momento y cualquier
@@ -95,41 +152,12 @@ El número se genera automáticamente al crear un contrato.
 - Todos los montos en numeric, mostrar con separadores de miles (Intl.NumberFormat)
 - El combo_snapshot guarda el combo completo al crear el contrato
   para que cambios futuros en el combo no afecten contratos viejos
+- Las fotos en galeria se guardan como rutas relativas /api/galeria/preview/[id]
+  para que el proxy de Drive funcione tanto en dev como en prod
 
 ## Variables de entorno
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-
-## Arquitectura
-El flujo de datos es simple. Todo vive en Supabase. Next.js conecta desde el servidor usando las credenciales de Supabase y muestra los datos. No hay lógica compleja en el cliente.
-
-Cuando creás un contrato, el combo se copia completo en combo_snapshot — así si en el futuro cambiás el precio del combo, los contratos viejos quedan intactos con el precio original.
-
-El PDF no es un archivo — es una página web con CSS de impresión. Cuando abrís /contratos/[id]/pdf el navegador la muestra lista para imprimir. Cada vez que la abrís tiene los pagos actualizados.
-
-## Fases de desarrollo
-
-### Fase 1 — Setup y login
-Objetivo: el proyecto existe, está conectado a Supabase y solo vos podés entrar.
-Entregable: podés hacer login con tu mail y ver una pantalla vacía.
-
-### Fase 2 — Gestión de combos
-Objetivo: podés crear, editar y desactivar combos desde /combos.
-Entregable: cargás tus 4 combos y los ves listados.
-
-### Fase 3 — Crear contrato
-Objetivo: formulario completo en /nuevo que guarda en Supabase.
-Entregable: creás un contrato, aparece en el historial con número 2026-001.
-
-### Fase 4 — Pagos
-Objetivo: dentro de cada contrato podés registrar pagos y ver saldo pendiente.
-Entregable: agregás 3 pagos a un contrato y el saldo se actualiza.
-
-### Fase 5 — PDF
-Objetivo: /contratos/[id]/pdf muestra el contrato completo con pagos, listo para imprimir.
-Entregable: imprimís un contrato y queda igual o mejor que el Word actual.
-
-### Fase 6 — Deploy
-Objetivo: la app está en internet en una URL de Vercel.
-Entregable: abrís la URL desde el celular y funciona.
+GOOGLE_DRIVE_SERVICE_ACCOUNT=   ← JSON de la service account (stringificado)
+GOOGLE_DRIVE_FOLDER_ID=         ← ID de la carpeta raíz de Drive (para el picker del admin)
