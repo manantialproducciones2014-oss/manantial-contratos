@@ -17,10 +17,18 @@ export type GaleriaPrivada = {
 
 async function listFilesFromFolder(folderId: string) {
   const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
-  if (!serviceAccountJson) throw new Error('Credenciales de Google Drive no configuradas')
+  if (!serviceAccountJson) throw new Error('Credenciales de Google Drive no configuradas en Vercel')
+
+  let credentials
+  try {
+    const clean = serviceAccountJson.startsWith("'") ? serviceAccountJson.slice(1, -1) : serviceAccountJson
+    credentials = JSON.parse(clean)
+  } catch {
+    throw new Error('El formato de las credenciales de Google Drive es inválido. Verificá la variable GOOGLE_DRIVE_SERVICE_ACCOUNT en Vercel.')
+  }
 
   const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(serviceAccountJson),
+    credentials,
     scopes: ['https://www.googleapis.com/auth/drive'],
   })
 
@@ -59,27 +67,31 @@ export async function crearGaleriaPrivada(input: {
   codigo: string
   folderUrl: string
 }): Promise<void> {
-  const folderId = extractFolderId(input.folderUrl)
-  const fotos = await listFilesFromFolder(folderId)
+  try {
+    const folderId = extractFolderId(input.folderUrl)
+    const fotos = await listFilesFromFolder(folderId)
 
-  if (fotos.length === 0) throw new Error('La carpeta no contiene imágenes válidas')
+    if (fotos.length === 0) throw new Error('La carpeta no contiene imágenes válidas')
 
-  const supabase = createClient()
-  const { error } = await supabase.from('galerias_privadas').insert({
-    titulo: input.titulo,
-    tipo: input.tipo,
-    fecha: input.fecha,
-    codigo: input.codigo.toUpperCase().trim(),
-    fotos,
-    activo: true,
-  })
+    const supabase = createClient()
+    const { error } = await supabase.from('galerias_privadas').insert({
+      titulo: input.titulo,
+      tipo: input.tipo,
+      fecha: input.fecha,
+      codigo: input.codigo.toUpperCase().trim(),
+      fotos,
+      activo: true,
+    })
 
-  if (error) {
-    if (error.code === '23505') throw new Error('Ese código ya existe, elegí otro')
-    throw new Error(error.message)
+    if (error) {
+      if (error.code === '23505') throw new Error('Ese código ya existe, elegí otro')
+      throw new Error(error.message)
+    }
+
+    revalidatePath('/(app)/galeria/privada')
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : 'Error al crear la galería privada')
   }
-
-  revalidatePath('/(app)/galeria/privada')
 }
 
 export async function toggleGaleriaPrivada(id: string, activo: boolean): Promise<void> {
