@@ -15,16 +15,22 @@ export type GaleriaPrivada = {
   created_at: string
 }
 
-async function listFilesFromFolder(folderId: string) {
+type ActionResult = { ok: true } | { ok: false; error: string }
+
+async function listFilesFromFolder(folderId: string): Promise<string[]> {
   const serviceAccountJson = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT
-  if (!serviceAccountJson) throw new Error('Credenciales de Google Drive no configuradas en Vercel')
+  if (!serviceAccountJson) {
+    throw new Error('Credenciales de Google Drive no configuradas en Vercel')
+  }
 
   let credentials
   try {
-    const clean = serviceAccountJson.startsWith("'") ? serviceAccountJson.slice(1, -1) : serviceAccountJson
+    const clean = serviceAccountJson.startsWith("'")
+      ? serviceAccountJson.slice(1, -1)
+      : serviceAccountJson
     credentials = JSON.parse(clean)
   } catch {
-    throw new Error('El formato de las credenciales de Google Drive es inválido. Verificá la variable GOOGLE_DRIVE_SERVICE_ACCOUNT en Vercel.')
+    throw new Error('Formato inválido en GOOGLE_DRIVE_SERVICE_ACCOUNT')
   }
 
   const auth = new google.auth.GoogleAuth({
@@ -50,14 +56,18 @@ function extractFolderId(url: string): string {
 }
 
 export async function obtenerGaleriasPrivadas(): Promise<GaleriaPrivada[]> {
-  const supabase = createClient()
-  const { data, error } = await supabase
-    .from('galerias_privadas')
-    .select('*')
-    .order('created_at', { ascending: false })
+  try {
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('galerias_privadas')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  if (error) throw new Error(error.message)
-  return data || []
+    if (error) throw new Error(error.message)
+    return data || []
+  } catch {
+    return []
+  }
 }
 
 export async function crearGaleriaPrivada(input: {
@@ -66,12 +76,14 @@ export async function crearGaleriaPrivada(input: {
   fecha: string
   codigo: string
   folderUrl: string
-}): Promise<void> {
+}): Promise<ActionResult> {
   try {
     const folderId = extractFolderId(input.folderUrl)
     const fotos = await listFilesFromFolder(folderId)
 
-    if (fotos.length === 0) throw new Error('La carpeta no contiene imágenes válidas')
+    if (fotos.length === 0) {
+      return { ok: false, error: 'La carpeta no contiene imágenes válidas (JPG, PNG o WebP)' }
+    }
 
     const supabase = createClient()
     const { error } = await supabase.from('galerias_privadas').insert({
@@ -84,13 +96,15 @@ export async function crearGaleriaPrivada(input: {
     })
 
     if (error) {
-      if (error.code === '23505') throw new Error('Ese código ya existe, elegí otro')
-      throw new Error(error.message)
+      if (error.code === '23505') return { ok: false, error: 'Ese código ya existe, elegí otro' }
+      return { ok: false, error: error.message }
     }
 
-    revalidatePath('/(app)/galeria/privada')
+    revalidatePath('/galeria/privada')
+    return { ok: true }
   } catch (err) {
-    throw new Error(err instanceof Error ? err.message : 'Error al crear la galería privada')
+    const msg = err instanceof Error ? err.message : 'Error desconocido al crear la galería'
+    return { ok: false, error: msg }
   }
 }
 
@@ -102,7 +116,7 @@ export async function toggleGaleriaPrivada(id: string, activo: boolean): Promise
     .eq('id', id)
 
   if (error) throw new Error(error.message)
-  revalidatePath('/(app)/galeria/privada')
+  revalidatePath('/galeria/privada')
 }
 
 export async function eliminarGaleriaPrivada(id: string): Promise<void> {
@@ -110,5 +124,5 @@ export async function eliminarGaleriaPrivada(id: string): Promise<void> {
   const { error } = await supabase.from('galerias_privadas').delete().eq('id', id)
 
   if (error) throw new Error(error.message)
-  revalidatePath('/(app)/galeria/privada')
+  revalidatePath('/galeria/privada')
 }

@@ -56,16 +56,17 @@ export default function GaleriaPrivadaPage() {
     if (!form.fecha.trim()) return setError('La fecha es requerida')
 
     setCreating(true)
-    try {
-      await crearGaleriaPrivada(form)
-      setSuccess(`Galería creada. Código: ${form.codigo.toUpperCase()}`)
-      setForm({ titulo: '', tipo: 'XV Años', fecha: '', codigo: '', folderUrl: '' })
-      await loadItems()
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al crear')
-    } finally {
-      setCreating(false)
+    const result = await crearGaleriaPrivada(form)
+    setCreating(false)
+
+    if (!result.ok) {
+      setError(result.error)
+      return
     }
+
+    setSuccess(`Galería creada. Código: ${form.codigo.toUpperCase()}`)
+    setForm({ titulo: '', tipo: 'XV Años', fecha: '', codigo: '', folderUrl: '' })
+    await loadItems()
   }
 
   async function handleToggle(id: string, activo: boolean) {
