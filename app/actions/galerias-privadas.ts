@@ -109,7 +109,7 @@ export async function crearGaleriaPrivada(input: {
 }
 
 export async function toggleGaleriaPrivada(id: string, activo: boolean): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase
     .from('galerias_privadas')
     .update({ activo })
@@ -120,7 +120,7 @@ export async function toggleGaleriaPrivada(id: string, activo: boolean): Promise
 }
 
 export async function eliminarGaleriaPrivada(id: string): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('galerias_privadas').delete().eq('id', id)
 
   if (error) throw new Error(error.message)
