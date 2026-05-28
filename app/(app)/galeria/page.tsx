@@ -264,7 +264,12 @@ export default function GaleriaPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#0A0A0A]">Galería</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#0A0A0A]">Galería</h1>
+        <a href="/galeria/privada" className="text-sm text-[#C8A951] hover:underline font-medium">
+          🔒 Galerías privadas →
+        </a>
+      </div>
 
       {error && <p className="text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">{error}</p>}
       {success && <p className="text-sm text-green-600 bg-green-50 px-4 py-3 rounded-lg">{success}</p>}
