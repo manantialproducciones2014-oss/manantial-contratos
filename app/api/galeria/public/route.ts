@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
     let query = supabase.from('galeria').select('*', { count: 'exact' }).eq('activo', true)
 
     // Filter by category if provided
-    if (categoria && ['xv', 'boda', 'empresarial'].includes(categoria)) {
+    const categoriasValidas = ['xv', 'boda', 'empresarial', 'sesiones', 'videografia', 'espejo', 'plataforma360']
+    if (categoria && categoriasValidas.includes(categoria)) {
       query = query.eq('categoria', categoria)
     }
 

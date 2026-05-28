@@ -4,10 +4,12 @@ import { createClient } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 import { google } from 'googleapis'
 
+export type Categoria = Categoria | 'sesiones' | 'videografia' | 'espejo' | 'plataforma360'
+
 export type GaleriaItem = {
   id: string
   titulo: string
-  categoria: 'xv' | 'boda' | 'empresarial'
+  categoria: Categoria
   fotos: string[]
   fecha: string
   descripcion: string | null
@@ -18,7 +20,7 @@ export type GaleriaItem = {
 
 type CreateGaleriaInput = {
   titulo: string
-  categoria: 'xv' | 'boda' | 'empresarial'
+  categoria: Categoria
   fotos: string[]
   fecha: string
   descripcion?: string
@@ -173,7 +175,7 @@ export async function obtenerArchivosGoogle(): Promise<
 export async function importarCarpetaGoogle(input: {
   folderUrl: string
   titulo: string
-  categoria: 'xv' | 'boda' | 'empresarial'
+  categoria: Categoria
   fecha: string
 }): Promise<void> {
   try {

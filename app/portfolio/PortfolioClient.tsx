@@ -28,10 +28,14 @@ export default function PortfolioClient({ initialItems, playfairClass = '' }: Po
     return item.fotos[0] || ''
   }
 
-  const categoriaLabel = {
+  const categoriaLabel: Record<string, string> = {
     xv: 'XV Años',
     boda: 'Bodas',
     empresarial: 'Empresariales',
+    sesiones: 'Sesiones',
+    videografia: 'Videografía',
+    espejo: 'Espejo Mágico',
+    plataforma360: 'Plataforma 360°',
   }
 
   const handlePrevPhoto = () => {
@@ -92,6 +96,10 @@ export default function PortfolioClient({ initialItems, playfairClass = '' }: Po
             { value: 'xv', label: 'XV Años' },
             { value: 'boda', label: 'Bodas' },
             { value: 'empresarial', label: 'Empresariales' },
+            { value: 'sesiones', label: 'Sesiones' },
+            { value: 'videografia', label: 'Videografía' },
+            { value: 'espejo', label: 'Espejo Mágico' },
+            { value: 'plataforma360', label: 'Plataforma 360°' },
           ].map((cat) => (
             <button
               key={cat.value}

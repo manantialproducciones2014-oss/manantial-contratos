@@ -9,6 +9,7 @@ import {
   obtenerArchivosGoogle,
   importarCarpetaGoogle,
   type GaleriaItem,
+  type Categoria,
 } from '@/app/actions/galeria'
 import { useEffect } from 'react'
 
@@ -16,12 +17,16 @@ const inputClass =
   'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A951]'
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1'
 
-const CATEGORIAS = ['xv', 'boda', 'empresarial'] as const
+const CATEGORIAS = ['xv', 'boda', 'empresarial', 'sesiones', 'videografia', 'espejo', 'plataforma360'] as const
 
 const categoriaLabel = {
   xv: 'XV Años',
   boda: 'Boda',
   empresarial: 'Empresarial',
+  sesiones: 'Sesiones',
+  videografia: 'Videografía',
+  espejo: 'Espejo Mágico',
+  plataforma360: 'Plataforma 360°',
 }
 
 export default function GaleriaPage() {
@@ -41,7 +46,7 @@ export default function GaleriaPage() {
   const [importForm, setImportForm] = useState<{
     folderUrl: string
     titulo: string
-    categoria: 'xv' | 'boda' | 'empresarial'
+    categoria: Categoria
     fecha: string
   }>({
     folderUrl: '',
@@ -53,7 +58,7 @@ export default function GaleriaPage() {
 
   const [form, setForm] = useState<{
     titulo: string
-    categoria: 'xv' | 'boda' | 'empresarial'
+    categoria: Categoria
     fotos: string[]
     fecha: string
     descripcion: string
