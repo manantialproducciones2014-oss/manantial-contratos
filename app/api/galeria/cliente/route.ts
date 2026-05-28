@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+// Uses service role key to bypass RLS for public code-based access
 
 export const dynamic = 'force-dynamic'
 
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
   const { data, error } = await supabase
