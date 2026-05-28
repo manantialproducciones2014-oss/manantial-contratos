@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 import { google } from 'googleapis'
 
-export type Categoria = Categoria | 'sesiones' | 'videografia' | 'espejo' | 'plataforma360'
+export type Categoria = 'xv' | 'boda' | 'empresarial' | 'sesiones' | 'videografia' | 'espejo' | 'plataforma360'
 
 export type GaleriaItem = {
   id: string
